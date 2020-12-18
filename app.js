@@ -1,17 +1,18 @@
 const express = require('express')
 const { MongoClient } = require("mongodb");
 const db_uri = process.env.MONGODB_URI;
-const client = new MongoClient(db_uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+
 var app = express();
 app.use(express.static(__dirname + "/public"));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 
+const client = new MongoClient(db_uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-async function createListing(client, newListing) {
+async function createListing(newListing) {
     const result = await client
       .db("vehicle-registry")
       .collection("employee-registry")
@@ -35,7 +36,8 @@ async function createListing(client, newListing) {
     } 
   }
   main().catch(console.error);
-  async function createTrafficData(client, classType, trafficData) {
+  async function createTrafficData(trafficData) {
+    await client.connect()
     const database = await client.db("agcs");
     const result = false;
     if (classType == "STUDENT")
@@ -70,6 +72,7 @@ async function createListing(client, newListing) {
 //IOT
 app.post("/verify-id", async function (req,res){
     const id = req.body.idScanned
+    console.log(id)
     const result = await verifyId(id)
     if (result) res.status(200).json({data:"verified"})
     if (!result) res.status(200).json({data:"not verified"})
