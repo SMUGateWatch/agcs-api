@@ -34,7 +34,7 @@ const client = new MongoClient(db_uri, {
     const id = req.body.idScanned;
     console.log(id);
     const verification = verifyId(id);
-    if(verification) res.status(200).json({data: "verified"}) : res.status(201).json({data: "not verified"});
+    (verification) ? res.status(200).json({data: "verified"}) : res.status(201).json({data: "not verified"});
   });
   app.post("/gate-status", function (req, res) {
     const data = req.body;
