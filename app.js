@@ -9,63 +9,76 @@ app.use(express.json());
 
 //IOT
 const client = new MongoClient(db_uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
- 
-  async function verifyId(uid) {
-
-      const result = false;
-    try {
-        await client.connect();
-        const database = await client.db("agcs");
-      const employee = await database
-        .collection("employee")
-        .findOne({ UID: uid });
-      const student = await database.collection("students").findOne({ UID: uid });
-      if (employee || student) result = true;
-    } catch (e) {
-      console.error(e);
-    }
-  
-    return result;
-  }
-  app.post("/verify-id", function (req, res) {
-    let id = req.body.idScanned;
-    console.log(id);
-    let verification = verifyId(id);
-    console.log(`Verification Result:: ${verification}`)
-    (verification) ? res.status(200).json({data: "verified"}) : res.status(201).json({data: "not verified"});
-  });
-  app.post("/gate-status", function (req, res) {
-    const data = req.body;
-  });
-
-  //MONITOR
-  app.get("gate-status", function (req, res) {
-    const data = req.body;
-  });
-
-  app.get("/trafficData",(req,res)=>{});
-  app.post("/sendTraffic",(req,res)=>{
-      const data = req.body
-    const result = false;
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+async function createTrafficData(classType, trafficData) {
+  const result = false;
+  try {
+    await client.connect();
+    const database = await client.db("agcs");
     if (classType == "STUDENT")
-      res = database.collection("students").insertOne(data);
+      res = await database.collection("students").insertOne(trafficData);
     res.insertedId
       ? (result = true)
       : console.log("Theres a problem witht he query");
     if (classType == "EMPLOYEE")
-      res = database.collection("employee").insertOne(data);
+      res = await database.collection("employee").insertOne(trafficData);
     res.insertedId
       ? (result = true)
       : console.log("Theres a problem witht he query");
-     if (result) console.log("traffic data sucessfull inserted");
-  });
+  } catch (e) {
+    console.error(e);
+  }
 
- app.get("/test", (req, res) => {
-    res.status(200).json({ message: "HELLO" });
-  });
+  return result;
+}
+async function verifyId(uid) {
+  const result = false;
+  try {
+    await client.connect();
+    const database = await client.db("agcs");
+    const employee = await database
+      .collection("employee")
+      .findOne({ UID: uid });
+    const student = await database.collection("students").findOne({ UID: uid });
+    if (employee || student) result = true;
+  } catch (e) {
+    console.error(e);
+  }
+
+  return result;
+}
+app.post("/verify-id", function (req, res) {
+  let id = req.body.idScanned;
+  console.log(id);
+  let verification = verifyId(id);
+  console.log(`Verification Result:: ${verification}`);
+  verification
+    ? res.status(200).json({ data: "verified" })
+    : res.status(201).json({ data: "not verified" });
+});
+app.post("/gate-status", function (req, res) {
+  const data = req.body;
+});
+
+//MONITOR
+app.get("gate-status", function (req, res) {
+  const data = req.body;
+});
+
+app.get("/trafficData", (req, res) => {});
+app.post("/sendTraffic", (req, res) => {
+  let data = req.body;
+  let classType = req.body.classType;
+  result = createTrafficData(classType, data);
+
+  if (result) res.status(200).json({ message: "Success" });
+});
+
+app.get("/test", (req, res) => {
+  res.status(200).json({ message: "HELLO" });
+});
 app.get("/", function (req, res) {
   res.render("index");
 });
