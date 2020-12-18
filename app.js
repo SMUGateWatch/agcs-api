@@ -34,11 +34,42 @@ async function createListing(client, newListing) {
     } 
   }
   main().catch(console.error);
-
+  async function createTrafficData(client, classType, trafficData) {
+    const database = await client.db("agcs");
+    const result = false;
+    if (classType == "STUDENT")
+      res = await database.collection("students").insertOne(trafficData);
+    res.insertedId
+      ? (result = true)
+      : console.log("Theres a problem witht he query");
+    if (classType == "EMPLOYEE")
+      res = await database.collection("employee").insertOne(trafficData);
+    res.insertedId
+      ? (result = true)
+      : console.log("Theres a problem witht he query");
+    return result;
+  }
+  async function verifyId(uid) {
+    const database = await client.db("agcs");
+    const result = false;
+    try {
+      await client.connect()
+      const employee = await database
+        .collection("employee")
+        .findOne({ UID: uid });
+      const student = await database.collection("students").findOne({ UID: uid });
+      if (employee || student) result = true;
+    } catch (e) {
+      console.error(e);
+    }
+  
+    return result;
+  }
 //IOT
-app.post("/verify-id", function (req,res){
-   res.status(200).json({message:"HELLO!"})
-    
+app.post("/verify-id", async function (req,res){
+    const id = req.body.idScanned
+    const result = await verifyId(id)
+    if (result) res.status(200).json({message:"HELLO!"})
 })
 app.post("/gate-status", function (req,res){
     const data = req.body
@@ -56,4 +87,7 @@ app.get("/trafficData")
 app.get("/", function (req,res){
     res.render("index");
 })
+app.use(function(req, res) {
+    res.status(404).send({url: req.originalUrl + ' not found'})
+  });
 module.exports = app
