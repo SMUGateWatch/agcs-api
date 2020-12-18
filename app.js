@@ -21,9 +21,9 @@ MongoClient.connect(
     console.log(id);
     const employee = db.collection("employee").findOne({ UID: uid });
     const student = db.collection("students").findOne({ UID: uid });
-    if (employee || student)  res.status(200).json({ data: "verified" });
+    if (employee || student)  res.status(200).json({ verificationResult: "verified" });
 
-    if (!result || !student) res.status(200).json({ data: "not verified" });
+    if (!result || !student) res.status(200).json({ verificationResult: "not verified" });
   });
   app.post("/gate-status", function (req, res) {
     const data = req.body;
