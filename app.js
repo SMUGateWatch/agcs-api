@@ -12,10 +12,6 @@ MongoClient.connect(
   db_uri,
   {
     useUnifiedTopology: true,
-  },
-  (err, client) => {
-    if (err) return console.error(err);
-    console.log("Connected to Database");
   }
 ).then((client) => {
   const db = client.db("agcs");
@@ -41,8 +37,22 @@ MongoClient.connect(
   app.get("/test", (req, res) => {
     res.status(200).json({ message: "HELLO" });
   });
-  app.get("/trafficData");
-  app.post("/sendTraffic");
+  app.get("/trafficData",(req,res)=>{});
+  app.post("/sendTraffic",(req,res)=>{
+      const data = req.body
+    const result = false;
+    if (classType == "STUDENT")
+      res = await database.collection("students").insertOne(data);
+    res.insertedId
+      ? (result = true)
+      : console.log("Theres a problem witht he query");
+    if (classType == "EMPLOYEE")
+      res = await database.collection("employee").insertOne(data);
+    res.insertedId
+      ? (result = true)
+      : console.log("Theres a problem witht he query");
+     if (result) console.log("traffic data sucessfull inserted");
+  });
 });
 
 app.get("/", function (req, res) {
