@@ -23,6 +23,7 @@ async function createListing(client, newListing) {
   async function main() {
     try {
       // Connect to the MongoDB cluster
+      await client.connect()
       client.isConnected()
         ? console.log("Server successfully connected to the database")
         : console.log("Server can't connect to server");
@@ -50,10 +51,11 @@ async function createListing(client, newListing) {
     return result;
   }
   async function verifyId(uid) {
-    const database = await client.db("agcs");
+    
     const result = false;
     try {
       await client.connect()
+      const database = await client.db("agcs");
       const employee = await database
         .collection("employee")
         .findOne({ UID: uid });
@@ -69,7 +71,9 @@ async function createListing(client, newListing) {
 app.post("/verify-id", async function (req,res){
     const id = req.body.idScanned
     const result = await verifyId(id)
-    if (result) res.status(200).json({message:"HELLO!"})
+    if (result) res.status(200).json({data:"verified"})
+    if (!result) res.status(200).json({data:"not verified"})
+    
 })
 app.post("/gate-status", function (req,res){
     const data = req.body
