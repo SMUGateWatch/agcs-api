@@ -8,23 +8,33 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //IOT
-const client = MongoClient.connect(
-  db_uri,
-  {
+const client = new MongoClient(db_uri, {
+    useNewUrlParser: true,
     useUnifiedTopology: true,
+  });
+ 
+  async function verifyId(uid) {
+
+      const result = false;
+    try {
+        await client.connect();
+        const database = await client.db("agcs");
+      const employee = await database
+        .collection("employee")
+        .findOne({ UID: uid });
+      const student = await database.collection("students").findOne({ UID: uid });
+      if (employee || student) result = true;
+    } catch (e) {
+      console.error(e);
+    }
+  
+    return result;
   }
-)
-
-  const db = client.db("agcs");
-
-  app.post("/verify-id", async function (req, res) {
+  app.post("/verify-id", function (req, res) {
     const id = req.body.idScanned;
     console.log(id);
-    const employee = db.collection("employee").findOne({ UID: uid });
-    const student = db.collection("students").findOne({ UID: uid });
-    if (employee || student)  res.status(200).json({ verificationResult: "verified" });
-
-    if (!result || !student) res.status(200).json({ verificationResult: "not verified" });
+    const verification = verifyId(id);
+    if(verification) res.status(200).json({data: "verified"}) : res.status(201).json({data: "not verified"});
   });
   app.post("/gate-status", function (req, res) {
     const data = req.body;
