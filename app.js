@@ -34,9 +34,6 @@ MongoClient.connect(
     const data = req.body;
   });
 
-  app.get("/test", (req, res) => {
-    res.status(200).json({ message: "HELLO" });
-  });
   app.get("/trafficData",(req,res)=>{});
   app.post("/sendTraffic",(req,res)=>{
       const data = req.body
@@ -54,7 +51,9 @@ MongoClient.connect(
      if (result) console.log("traffic data sucessfull inserted");
   });
 });
-
+ app.get("/test", (req, res) => {
+    res.status(200).json({ message: "HELLO" });
+  });
 app.get("/", function (req, res) {
   res.render("index");
 });
