@@ -42,12 +42,12 @@ MongoClient.connect(
       const data = req.body
     const result = false;
     if (classType == "STUDENT")
-      res = await database.collection("students").insertOne(data);
+      res = database.collection("students").insertOne(data);
     res.insertedId
       ? (result = true)
       : console.log("Theres a problem witht he query");
     if (classType == "EMPLOYEE")
-      res = await database.collection("employee").insertOne(data);
+      res = database.collection("employee").insertOne(data);
     res.insertedId
       ? (result = true)
       : console.log("Theres a problem witht he query");
