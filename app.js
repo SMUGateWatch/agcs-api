@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require('express')
 const { MongoClient } = require("mongodb");
 const db_uri = process.env.MONGODB_URI;
@@ -53,7 +55,6 @@ async function createListing(newListing) {
     return result;
   }
   async function verifyId(uid) {
-    
     const result = false;
     try {
       await client.connect()
