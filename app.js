@@ -8,12 +8,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 //IOT
-MongoClient.connect(
+const client = MongoClient.connect(
   db_uri,
   {
     useUnifiedTopology: true,
   }
-).then((client) => {
+)
+
   const db = client.db("agcs");
 
   app.post("/verify-id", async function (req, res) {
@@ -50,7 +51,7 @@ MongoClient.connect(
       : console.log("Theres a problem witht he query");
      if (result) console.log("traffic data sucessfull inserted");
   });
-});
+
  app.get("/test", (req, res) => {
     res.status(200).json({ message: "HELLO" });
   });
