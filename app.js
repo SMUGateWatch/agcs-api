@@ -82,10 +82,14 @@ app.get("gate-status", function (req,res){
     
 })
 
-app.post("/sendTraffic")
+app.get("/test", (req,res)=>{
+    res.status(200).json({message: "HELLO"})
+})
 app.get("/trafficData")
+app.post("/sendTraffic")
 app.get("/", function (req,res){
     res.render("index");
+
 })
 app.use(function(req, res) {
     res.status(404).send({url: req.originalUrl + ' not found'})
